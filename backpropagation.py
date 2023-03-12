@@ -28,10 +28,10 @@ y = torch.tensor([5.0, 7.0, 9.0, 11.0, 13.0])
 # print(f"Loss: {loss.item()}")
 
 num_epochs = 1000
-learning_rate = 0.01
+learning_rate = 0.05
 for epoch in range(num_epochs):
     y_pred = a * x + b
-    loss = torch.sum((y - y_pred) ** 2)
+    loss = torch.mean((y - y_pred) ** 2)
     loss.backward()
     with torch.no_grad():
         a -= learning_rate * a.grad

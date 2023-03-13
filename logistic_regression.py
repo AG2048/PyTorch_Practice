@@ -3,6 +3,14 @@
 # 2. Create the model (input, output, forward pass
 # 3. Train the model (loss, optimizer, training loop - forward, backward, update)
 
+# Major difference between logistic regression and linear regression:
+#   logistic regression is used for classification
+#       - sigmoid function is used for classification
+#       - cross entropy loss is used as loss function
+#   linear regression is used for regression
+#       - linear function is used for regression
+#       - MSE loss is used as loss function
+
 import torch
 import torch.nn as nn
 import numpy as np

@@ -77,6 +77,7 @@ acc_list = []
 
 num_epochs = 1000
 for epoch in range(num_epochs):
+    # Note it would have been better to alternate the training data set, or it's possible to get stuck in a local minima
     # forward pass
     y_pred = model(X_train)
 

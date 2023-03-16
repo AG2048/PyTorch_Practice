@@ -41,8 +41,8 @@ class ImageDataSet(Dataset):
 
 
 # Training Setup
-num_epoch = 10
-batch_size = 100
+num_epoch = 1
+batch_size = 10
 learning_rate = 0.01
 dataset = ImageDataSet(dset)
 dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -53,9 +53,9 @@ n_iterations = math.ceil(total_samples / batch_size)
 class CNNModel(nn.Module):
     def __init__(self, image_height, image_width, n_classes):
         super(CNNModel, self).__init__()
-        self.conv_1 = nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1)
-        output_width = (image_width - 3 + 2 * 1) / 1 + 1
-        output_height = (image_height - 3 + 2 * 1) / 1 + 1
+        self.conv_1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=1)
+        output_width = (image_width - 5 + 2 * 1) / 1 + 1
+        output_height = (image_height - 5 + 2 * 1) / 1 + 1
         num_channels = 16
         # output width = (W - F + 2P) / S + 1 = (28 - 3 + 2 * 1) / 1 + 1 = 28
         # next layer: 28 / 2 = 14 because of maxpool with kernel_size=2, stride=2
@@ -64,12 +64,20 @@ class CNNModel(nn.Module):
         output_height = output_height / 2
         num_channels = 16
         # output width = (14 - 3 + 2 * 1) / 1 + 1 = 14
-        self.conv_2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
+        self.conv_2 = nn.Conv2d(16, 32, kernel_size=4, stride=1, padding=1)
+        output_width = (output_width - 4 + 2 * 1) / 1 + 1
+        output_height = (output_height - 4 + 2 * 1) / 1 + 1
+        num_channels = 32
+        # next layer: 14 / 2 = 7 because of maxpool with kernel_size=2, stride=2
+        self.pool_2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        output_width = output_width / 2
+        output_height = output_height / 2
+        self.conv_3 = nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1)
         output_width = (output_width - 3 + 2 * 1) / 1 + 1
         output_height = (output_height - 3 + 2 * 1) / 1 + 1
         num_channels = 32
         # next layer: 14 / 2 = 7 because of maxpool with kernel_size=2, stride=2
-        self.pool_2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.pool_3 = nn.MaxPool2d(kernel_size=2, stride=2)
         output_width = output_width / 2
         output_height = output_height / 2
         num_channels = 32
@@ -81,12 +89,15 @@ class CNNModel(nn.Module):
         out_2 = self.pool_1(out_1)
         out_3 = torch.relu(self.conv_2(out_2))
         out_4 = self.pool_2(out_3)
-        out_5 = out_4.reshape(out_4.size(0), -1)
-        out_6 = self.fc_1(out_5)
-        return out_6
+        out_5 = torch.relu(self.conv_3(out_4))
+        out_6 = self.pool_3(out_5)
+        out_7 = out_6.reshape(out_6.size(0), -1)
+        out_8 = self.fc_1(out_7)
+        return out_8
 
 
-model = CNNModel(28, 28, 10)
+model = torch.load('model/MNIST_model.pt')
+model.eval()
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 

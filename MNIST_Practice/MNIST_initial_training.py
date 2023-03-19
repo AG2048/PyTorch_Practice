@@ -23,10 +23,6 @@ class ImageDataSet(Dataset):
         self.x_data = torch.tensor(self.x_data, dtype=torch.float32)
         self.x_data = self.x_data / 255
         self.x_data = self.x_data.reshape(self.n_samples, 1, 28, 28)
-        y_data = np.zeros((self.n_samples, 10))
-        for i in range(self.n_samples):
-            y_data[i, int(self.y_data[i])] = 1
-        self.y_data = torch.from_numpy(y_data)
 
         # # only take 1000 samples to train for now:
         # self.x_data = self.x_data[:1000]
@@ -41,7 +37,7 @@ class ImageDataSet(Dataset):
 
 
 # Training Setup
-num_epoch = 10
+num_epoch = 1
 batch_size = 100
 learning_rate = 0.01
 dataset = ImageDataSet(dset)
@@ -154,7 +150,7 @@ with torch.no_grad():
     l = criterion(y_pred, y)
     # get accuracy
     _, predicted = torch.max(y_pred.data, 1)
-    _, actual = torch.max(y.data, 1)
+    actual = y.data
     correct = (predicted == actual).sum().item()
     accuracy = correct / total_samples
     print(
